@@ -356,12 +356,6 @@ The pipeline exposes metrics through:
 
 ---
 
-## 📄 License
-
-MIT License — see [LICENSE](LICENSE) for details.
-
----
-
 <div align="center">
 Built with ❤️ using Databricks Spark Declarative Pipelines
 </div>
