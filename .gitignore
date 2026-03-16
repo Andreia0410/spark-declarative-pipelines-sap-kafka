@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+
+# Databricks
+.databricks/
+bundle.lock
+*.lock
+
+# Secrets — NEVER commit
+*.env
+.env.*
+secrets.json
+*credentials*
+
+# Delta / Spark checkpoints
+checkpoints/
+_delta_log/
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db

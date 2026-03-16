@@ -1,0 +1,83 @@
+bundle:
+  name: spark-declarative-pipelines
+
+variables:
+  catalog:
+    description: Unity Catalog name
+    default: dev_catalog
+  kafka_bootstrap:
+    description: Kafka bootstrap servers
+  schema_registry_url:
+    description: Confluent Schema Registry URL
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://<your-workspace>.azuredatabricks.net
+    variables:
+      catalog: dev_catalog
+
+  prod:
+    mode: production
+    workspace:
+      host: https://<your-workspace>.azuredatabricks.net
+    variables:
+      catalog: prod_catalog
+
+resources:
+  pipelines:
+    business_partner_pipeline:
+      name: "SDP - Business Partner [${bundle.target}]"
+      target: "${var.catalog}"
+      catalog: "${var.catalog}"
+      development: ${bundle.target == 'dev'}
+      continuous: false
+      channel: CURRENT
+
+      configuration:
+        kafka.bootstrap.servers:      "${var.kafka_bootstrap}"
+        schema.registry.url:          "${var.schema_registry_url}"
+        kafka.topic.business_partner: "sap.masterdata.business_partner.raw"
+        kafka.topic.bp.output:        "masterdata.business_partner.v1"
+        avro.schema.business_partner: ${file("schemas/avro/business_partner.avsc")}
+
+      libraries:
+        - notebook:
+            path: pipelines/business_partner/raw/sdp_bp_raw.py
+        - notebook:
+            path: pipelines/business_partner/trusted/sdp_bp_trusted.py
+        - notebook:
+            path: pipelines/business_partner/gold/sdp_bp_gold.py
+
+      clusters:
+        - label: default
+          spark_version: 15.4.x-scala2.12
+          node_type_id: Standard_DS3_v2
+          autoscale:
+            min_workers: 1
+            max_workers: 4
+
+    event_streaming_pipeline:
+      name: "SDP - Event Streaming [${bundle.target}]"
+      target: "${var.catalog}"
+      catalog: "${var.catalog}"
+      development: ${bundle.target == 'dev'}
+      continuous: true  # Always-on streaming
+
+      configuration:
+        kafka.bootstrap.servers: "${var.kafka_bootstrap}"
+        kafka.topic.events:      "platform.events.v1"
+
+      libraries:
+        - notebook:
+            path: pipelines/event_streaming/sdp_events_pipeline.py
+
+      clusters:
+        - label: default
+          spark_version: 15.4.x-scala2.12
+          node_type_id: Standard_DS4_v2
+          autoscale:
+            min_workers: 2
+            max_workers: 8

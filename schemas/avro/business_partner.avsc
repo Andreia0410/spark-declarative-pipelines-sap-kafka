@@ -1,0 +1,74 @@
+{
+  "type": "record",
+  "name": "BusinessPartner",
+  "namespace": "com.platform.masterdata.v1",
+  "doc": "Unified SAP Business Partner entity published to Kafka masterdata topic",
+  "fields": [
+    {
+      "name": "sap_client",
+      "type": "string",
+      "doc": "SAP client/mandant identifier"
+    },
+    {
+      "name": "bp_number",
+      "type": "string",
+      "doc": "Business partner number — primary key"
+    },
+    {
+      "name": "bp_category",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Business partner category: 1=Natural Person, 2=Organization, 3=Group"
+    },
+    {
+      "name": "unified_name",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Resolved name from customer, vendor, or person name fields"
+    },
+    {
+      "name": "customer_country",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "ISO 3166-1 alpha-2 country code from customer master (KNA1)"
+    },
+    {
+      "name": "customer_region",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Region/state code from customer master"
+    },
+    {
+      "name": "vendor_tax_id",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Tax identification number from vendor master (LFA1)"
+    },
+    {
+      "name": "is_active",
+      "type": ["null", "boolean"],
+      "default": null,
+      "doc": "Whether the business partner is currently active in SAP"
+    },
+    {
+      "name": "created_date_parsed",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Business partner creation date (ISO 8601 format)"
+    },
+    {
+      "name": "changed_date_parsed",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Last modification date in SAP (ISO 8601 format)"
+    },
+    {
+      "name": "gold_processed_at",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Timestamp when this record was written by the Gold pipeline"
+    }
+  ]
+}
